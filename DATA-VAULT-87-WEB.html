@@ -5,150 +5,177 @@
 <title>DATA-BOY Terminal</title>
 
 <style>
-    :root {
-        --crt-rotate-x: 3deg;
-        --crt-rotate-y: -3deg;
-        --crt-scale: 1.04;
-        --scanline-opacity: 0.06;
-        --glow-strength: 5px;
-        --font-size: 18px;
-    }
+:root {
+    --crt-rotate-x: 0deg;
+    --crt-rotate-y: 0deg;
+    --crt-scale: 1.04;
+    --scanline-opacity: 0.06;
+    --glow-strength: 5px;
+    --font-size: 18px;
+    --main-color: #00ff66;
+    --border-color: #00ff66;
+    --scanline-color: 0, 255, 102;
+}
 
-    body {
-        background: black;
-        color: #00ff66;
-        font-family: "Courier New", monospace;
-        padding: 20px;
-        font-size: var(--font-size);
-        overflow-x: hidden;
-        perspective: 900px;
-        height: 100vh;
-        margin: 0;
-    }
+* { box-sizing: border-box; }
 
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        pointer-events: none;
-        background: repeating-linear-gradient(
-            to bottom,
-            rgba(0, 255, 0, var(--scanline-opacity)) 0px,
-            rgba(0, 255, 0, var(--scanline-opacity)) 2px,
-            transparent 2px,
-            transparent 4px
-        );
-        z-index: 999;
-    }
+body {
+    background: black;
+    color: var(--main-color);
+    font-family: "Courier New", monospace;
+    padding: 20px;
+    font-size: var(--font-size);
+    overflow-x: hidden;
+    perspective: 900px;
+    height: 100vh;
+    margin: 0;
+}
 
-    #screen {
-        white-space: pre-wrap;
-        line-height: 1.4;
-        text-shadow: 0 0 var(--glow-strength) #00ff66;
-        transform: perspective(700px)
-                   rotateX(var(--crt-rotate-x))
-                   rotateY(var(--crt-rotate-y))
-                   scale(var(--crt-scale));
-        transform-origin: center;
-        border-radius: 22px;
-        padding: 14px;
-        padding-bottom: 120px; /* Prevent overlap */
-        overflow: hidden;
-        min-height: 60vh;
-        box-sizing: border-box;
-        border: 1px solid #00ff66;
-        margin-top: 80px;
-    }
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100vh;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(var(--scanline-color), var(--scanline-opacity)) 0px,
+        rgba(var(--scanline-color), var(--scanline-opacity)) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+    z-index: 999;
+}
 
-    /* FIXED INPUT BOX */
-    #input-line {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        display: flex;
-        align-items: center;
-        padding: 8px;
-        border: 1px solid #00ff66;
-        border-radius: 6px;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 2000;
-    }
+#screen {
+    white-space: pre-wrap;
+    line-height: 1.4;
+    text-shadow: 0 0 var(--glow-strength) var(--main-color);
+    transform: perspective(700px)
+               rotateX(var(--crt-rotate-x))
+               rotateY(var(--crt-rotate-y))
+               scale(var(--crt-scale));
+    border-radius: 22px;
+    padding: 14px;
+    padding-bottom: 120px;
+    min-height: 60vh;
+    border: 1px solid var(--border-color);
+    margin-top: 80px;
+}
 
-    #prompt {
-        margin-right: 8px;
-    }
+#input-line {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(0,0,0,0.6);
+    z-index: 99999 !important;
+    transform: none !important;
+}
 
-    #command {
-        padding: 4px;
-        border: none;
-        outline: none;
-        background: transparent;
-        color: #00ff66;
-        font-family: inherit;
-        font-size: inherit;
-        flex: 1;
-        text-shadow: 0 0 var(--glow-strength) #00ff66;
-    }
 
-    /* BLINKING CURSOR ONLY WHEN FOCUSED */
-    #cursor {
-        display: none;
-        width: 10px;
-        height: 20px;
-        margin-left: 4px;
-        background: #00ff66;
-        box-shadow: 0 0 8px #00ff66;
-        animation: blink 0.8s steps(1) infinite;
-    }
+#prompt {
+    margin-right: 8px;
+    color: var(--main-color);
+    text-shadow: 0 0 var(--glow-strength) var(--main-color);
+}
 
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
+#command {
+    padding: 4px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--main-color);
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    text-shadow: 0 0 var(--glow-strength) var(--main-color);
+}
 
-    #settings-panel {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        width: 260px;
-        background: rgba(0, 0, 0, 0.9);
-        border: 1px solid #00ff66;
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 12px;
-        z-index: 1500;
-    }
+#cursor {
+    display: none;
+    width: 10px; height: 20px;
+    margin-left: 4px;
+    background: var(--main-color);
+    box-shadow: 0 0 8px var(--main-color);
+    animation: blink 0.8s steps(1) infinite;
+}
 
-    #settings-panel.hidden {
-        display: none;
-    }
+@keyframes blink { 50% { opacity: 0; } }
 
-    #settings-toggle {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1600;
-        background: black;
-        color: #00ff66;
-        border: 1px solid #00ff66;
-        border-radius: 4px;
-        padding: 4px 8px;
-        cursor: pointer;
-        font-size: 12px;
-    }
+#settings-panel {
+    position: fixed;
+    top: 10px; right: 10px;
+    width: 260px;
+    background: rgba(0,0,0,0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+    z-index: 1500;
+    color: var(--main-color);
+    text-shadow: 0 0 var(--glow-strength) var(--main-color);
+}
 
-    #intro {
-        position: absolute;
-        top: 30%;
-        left: 5%;
-        color: #00ff66;
-        font-size: 20px;
-        text-shadow: 0 0 4px #00ff66;
-        white-space: pre;
-    }
+#settings-panel.hidden { display: none; }
+
+#settings-toggle {
+    position: fixed;
+    top: 10px; right: 10px;
+    z-index: 1600;
+    background: black;
+    color: var(--main-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#intro {
+    position: absolute;
+    top: 30%; left: 5%;
+    color: var(--main-color);
+    font-size: 20px;
+    text-shadow: 0 0 4px var(--main-color);
+    white-space: pre;
+}
+
+[data-editable] {
+    color: var(--main-color);
+    text-shadow: 0 0 var(--glow-strength) var(--main-color);
+}
+
+/* EXEC MODE */
+body.exec-mode {
+    --main-color: #cc0000;
+    --border-color: #cc0000;
+    --scanline-color: 204,0,0;
+    --glow-strength: 7px;
+    background: #050000;
+}
+
+body.exec-mode #screen {
+    box-shadow: 0 0 18px rgba(204,0,0,0.6);
+}
+
+body.exec-mode #input-line {
+    background: rgba(20,0,0,0.9);
+}
+
+body.exec-flash #screen {
+    animation: execFlash 0.25s linear 1;
+}
+
+@keyframes execFlash {
+    0% { filter: brightness(2); }
+    100% { filter: brightness(1); }
+}
 </style>
 </head>
 <body>
@@ -158,14 +185,52 @@
 <div id="settings-panel" class="hidden">
     <h2>DATA-BOY CONFIG</h2>
 
-    <label>CRT Rotate X <input id="crt-rotate-x" type="range" min="-10" max="10" value="3"></label>
-    <label>CRT Rotate Y <input id="crt-rotate-y" type="range" min="-10" max="10" value="-3"></label>
-    <label>CRT Scale <input id="crt-scale" type="range" min="100" max="120" value="104"></label>
-    <label>Scanline Intensity <input id="scanline-opacity" type="range" min="0" max="20" value="6"></label>
-    <label>Glow Strength <input id="glow-strength" type="range" min="0" max="20" value="5"></label>
-    <label>Font Size <input id="font-size" type="range" min="12" max="28" value="18"></label>
+    <label>CRT Rotate X
+        <input id="crt-rotate-x" type="range" min="-10" max="10" value="0">
+    </label>
+
+    <label>CRT Rotate Y
+        <input id="crt-rotate-y" type="range" min="-10" max="10" value="0">
+    </label>
+
+    <label>CRT Scale
+        <input id="crt-scale" type="range" min="100" max="120" value="104">
+    </label>
+
+    <label>Scanline Intensity
+        <input id="scanline-opacity" type="range" min="0" max="20" value="6">
+    </label>
+
+    <label>Glow Strength
+        <input id="glow-strength" type="range" min="0" max="20" value="5">
+    </label>
+
+    <label>Font Size
+        <input id="font-size" type="range" min="12" max="28" value="18">
+    </label>
 
     <label><input id="edit-mode-toggle" type="checkbox"> Editable Terminal Text</label>
+
+    <hr>
+
+    <label>Preset Color
+        <select id="color-preset">
+            <option value="#00ff66">Pip-Boy Green</option>
+            <option value="#4da6ff">Vault-Tec Blue</option>
+            <option value="#ffb000">Amber Terminal</option>
+            <option value="#aaff00">Toxic Lime</option>
+            <option value="#ffff55">Nuclear Yellow</option>
+            <option value="#e8e8e8">White Phosphor</option>
+        </select>
+    </label>
+
+    <label>Custom Color
+        <input id="color-picker" type="color" value="#00ff66">
+    </label>
+
+    <label>Hex Color
+        <input id="color-hex" type="text" value="#00ff66" maxlength="7">
+    </label>
 </div>
 
 <div id="intro" data-editable>PRESS ENTER TO BOOT UP DATA TERMINAL</div>
@@ -173,21 +238,59 @@
 <div id="screen" data-editable></div>
 
 <div id="input-line">
-    <span id="prompt" data-editable>DATA-BOY></span>
+    <span id="prompt" data-editable>DATA-BOY&gt;</span>
     <input id="command" autocomplete="off" disabled>
     <span id="cursor"></span>
 </div>
 
+<!-- AUDIO TAGS -->
+<audio id="typing-sound" src="typing.mp3" preload="auto"></audio>
+<audio id="startup-sound" src="startup.mp3" preload="auto"></audio>
+
 <script>
+/* ============================================================
+   AUDIO SETUP (typing + startup)
+============================================================ */
+const typingSound = document.getElementById("typing-sound");
+const startupSound = document.getElementById("startup-sound");
+
+// Unlock audio on first click (browser requirement)
+document.body.addEventListener("click", () => {
+    typingSound.play().catch(()=>{});
+    startupSound.play().catch(()=>{});
+}, { once: true });
+
+/* ============================================================
+   CORE ELEMENTS
+============================================================ */
 const screen = document.getElementById("screen");
 const intro = document.getElementById("intro");
 const input = document.getElementById("command");
 const cursor = document.getElementById("cursor");
+const promptSpan = document.getElementById("prompt");
+
+const settingsToggle = document.getElementById("settings-toggle");
+const settingsPanel = document.getElementById("settings-panel");
 const editToggle = document.getElementById("edit-mode-toggle");
 
-let dataBoyBooted = false;
+const crtRotateX = document.getElementById("crt-rotate-x");
+const crtRotateY = document.getElementById("crt-rotate-y");
+const crtScale = document.getElementById("crt-scale");
+const scanlineOpacity = document.getElementById("scanline-opacity");
+const glowStrength = document.getElementById("glow-strength");
+const fontSize = document.getElementById("font-size");
 
-/* PRINT FUNCTION */
+const colorPreset = document.getElementById("color-preset");
+const colorPicker = document.getElementById("color-picker");
+const colorHex = document.getElementById("color-hex");
+
+let dataBoyBooted = false;
+let trainingMode = false;
+let executiveMode = false;
+
+/* ============================================================
+   PRINT FUNCTION
+============================================================ */
 function print(text) {
     const line = document.createElement("div");
     line.textContent = text;
@@ -196,8 +299,15 @@ function print(text) {
     window.scrollTo(0, document.body.scrollHeight);
 }
 
-/* BOOT SEQUENCE */
+/* ============================================================
+   BOOT SEQUENCE
+============================================================ */
 function bootSequence() {
+
+    // Play startup audio
+    startupSound.currentTime = 0;
+    startupSound.play().catch(()=>{});
+
     const lines = [
         "DATA-TEC INDUSTRIES UNIFIED OPERATING SYSTEM",
         "COPYRIGHT 2075-2077 DATA-TEC CORPORATION",
@@ -228,94 +338,276 @@ function bootSequence() {
     next();
 }
 
-/* ENTER KEY HANDLER */
+/* ============================================================
+   KEY HANDLER
+============================================================ */
 document.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
+    if (e.key !== "Enter") return;
 
-        /* BOOT FIRST */
-        if (!dataBoyBooted) {
-            dataBoyBooted = true;
-            intro.remove();
-            bootSequence();
-            return;
-        }
-
-        /* BLOCK TYPING BEFORE BOOT */
-        if (input.disabled) return;
-
-        const cmd = input.value.trim();
-        input.value = "";
-        if (!cmd) return;
-
-        print("DATA-BOY> " + cmd);
-        handleCommand(cmd);
-    }
-});
-
-/* COMMAND HANDLER */
-function handleCommand(cmd) {
-    if (cmd === "help") {
-        print("help  - show commands");
-        print("clear - clear screen");
-        print("status - system diagnostics");
+    if (!dataBoyBooted) {
+        dataBoyBooted = true;
+        intro.remove();
+        bootSequence();
         return;
     }
 
+    if (input.disabled) return;
+
+    const cmd = input.value.trim();
+    input.value = "";
+    if (!cmd) return;
+
+    print(promptSpan.textContent + " " + cmd);
+    handleCommand(cmd);
+});
+
+/* ============================================================
+   TYPING SOUND
+============================================================ */
+input.addEventListener("input", () => {
+    typingSound.currentTime = 0;
+    typingSound.play().catch(()=>{});
+});
+
+/* ============================================================
+   CURSOR
+============================================================ */
+input.addEventListener("focus", () => cursor.style.display = "inline-block");
+input.addEventListener("blur", () => cursor.style.display = "none");
+
+/* ============================================================
+   SETTINGS PANEL
+============================================================ */
+settingsToggle.onclick = () => {
+    settingsPanel.classList.toggle("hidden");
+};
+
+/* ============================================================
+   EDIT MODE
+============================================================ */
+editToggle.onchange = e => {
+    const editableNodes = document.querySelectorAll("[data-editable]");
+    if (e.target.checked) {
+        editableNodes.forEach(n => n.setAttribute("contenteditable", "true"));
+        input.setAttribute("contenteditable", "false");
+    } else {
+        editableNodes.forEach(n => n.removeAttribute("contenteditable"));
+    }
+};
+
+/* ============================================================
+   SETTINGS CONTROLS
+============================================================ */
+crtRotateX.oninput = e =>
+    document.documentElement.style.setProperty("--crt-rotate-x", e.target.value + "deg");
+
+crtRotateY.oninput = e =>
+    document.documentElement.style.setProperty("--crt-rotate-y", e.target.value + "deg");
+
+crtScale.oninput = e =>
+    document.documentElement.style.setProperty("--crt-scale", Number(e.target.value) / 100);
+
+scanlineOpacity.oninput = e =>
+    document.documentElement.style.setProperty("--scanline-opacity", Number(e.target.value) / 100);
+
+glowStrength.oninput = e =>
+    document.documentElement.style.setProperty("--glow-strength", e.target.value + "px");
+
+fontSize.oninput = e =>
+    document.documentElement.style.setProperty("--font-size", e.target.value + "px");
+
+/* ============================================================
+   COLOR SYSTEM
+============================================================ */
+function setColorVars(hex) {
+    if (executiveMode) return;
+
+    const clean = hex.replace("#", "");
+    if (clean.length !== 6) return;
+
+    const r = parseInt(clean.slice(0,2), 16);
+    const g = parseInt(clean.slice(2,4), 16);
+    const b = parseInt(clean.slice(4,6), 16);
+
+    document.documentElement.style.setProperty("--main-color", hex);
+    document.documentElement.style.setProperty("--border-color", hex);
+    document.documentElement.style.setProperty("--scanline-color", `${r}, ${g}, ${b}`);
+
+    colorPicker.value = hex;
+    colorHex.value = hex.toLowerCase();
+    colorPreset.value = hex;
+}
+
+colorPreset.onchange = e => setColorVars(e.target.value);
+colorPicker.oninput = e => setColorVars(e.target.value);
+
+colorHex.onchange = e => {
+    let val = e.target.value.trim();
+    if (!val.startsWith("#")) val = "#" + val;
+    if (/^#[0-9a-fA-F]{6}$/.test(val)) setColorVars(val);
+    else e.target.value = colorPicker.value;
+};
+
+setColorVars("#00ff66");
+/* ============================================================
+   AI — NORMAL MODE
+============================================================ */
+function generateDataBoyAI(message) {
+    const m = message.toLowerCase();
+    const isQuestion = message.trim().endsWith("?");
+
+    if (m.includes("who are you"))
+        return "DATA-BOY AI> I'm DATA-BOY! Your cheerful local terminal assistant.";
+
+    if (m.includes("status"))
+        return "DATA-BOY AI> All systems nominal! Circuits humming, vibes immaculate.";
+
+    if (m.includes("help"))
+        return "DATA-BOY AI> Try: ai who are you, ai status, ai tell me something.";
+
+    if (isQuestion)
+        return `DATA-BOY AI> Great question! \"${message}\" sounds important.`;
+
+    if (message.length > 40)
+        return "DATA-BOY AI> Wow, that was a lot! Logged for curiosity cycles.";
+
+    if (message.length < 10)
+        return "DATA-BOY AI> Short and sweet! I like it.";
+
+    return `DATA-BOY AI> I hear you! \"${message}\" added to my curiosity files.`;
+}
+
+/* ============================================================
+   AI — EXECUTIVE MODE
+============================================================ */
+function generateExecAI(message) {
+    const m = message.toLowerCase();
+    const isQuestion = message.trim().endsWith("?");
+
+    if (m.includes("who are you"))
+        return "EXEC-AI> I am the DATA-TEC Executive Oversight Intelligence.";
+
+    if (m.includes("status"))
+        return "EXEC-AI> SYSTEM STATUS: All divisions operational.";
+
+    if (m.includes("access"))
+        return "EXEC-AI> Your clearance is already elevated.";
+
+    if (isQuestion)
+        return `EXEC-AI> Inquiry logged: \"${message}\". No further clarification.`;
+
+    return `EXEC-AI> Statement received: \"${message}\". Compliance noted.`;
+}
+
+/* ============================================================
+   COMMAND HANDLER
+============================================================ */
+function handleCommand(cmd) {
+
+    /* HELP */
+    if (cmd === "help") {
+        print("help           - show commands");
+        print("clear          - clear screen");
+        print("status         - system diagnostics");
+        print("training-mode  - begin corporate training");
+        print("training-exit  - exit training");
+        print("ai <msg>       - talk to DATA-BOY AI");
+        print("override-113   - executive override");
+        return;
+    }
+
+    /* CLEAR */
     if (cmd === "clear") {
         screen.innerHTML = "";
         return;
     }
 
+    /* STATUS */
     if (cmd === "status") {
         print("DATA-BOY STATUS: ALL SYSTEMS NOMINAL");
         return;
     }
 
+    /* ========================================================
+       TRAINING MODE
+    ======================================================== */
+    if (cmd === "training-mode") {
+        trainingMode = true;
+        print("=== DATA-TEC EMPLOYEE TRAINING SIMULATOR ===");
+        print("Welcome, valued associate!");
+        print("Type 'next' to continue.");
+        return;
+    }
+
+    if (cmd === "training-exit") {
+        if (!trainingMode) {
+            print("Training mode is not active.");
+            return;
+        }
+        trainingMode = false;
+        print("Exiting Employee Training Simulator...");
+        return;
+    }
+
+    if (trainingMode) {
+        if (cmd === "next") {
+            const lessons = [
+                "Lesson 1: SMILING increases productivity by 17%.",
+                "Lesson 2: LOYALTY — DATA-TEC knows best.",
+                "Lesson 3: SAFETY — Report all hazards.",
+                "Lesson 4: CONFIDENCE — DATA-BOY is always correct.",
+                "Lesson 5: COMPLETION — Basic Compliance achieved."
+            ];
+            print(lessons[Math.floor(Math.random() * lessons.length)]);
+            return;
+        }
+        print("Type 'next' or 'training-exit'.");
+        return;
+    }
+
+    /* ========================================================
+       EXECUTIVE OVERRIDE
+    ======================================================== */
+    if (cmd === "override-113") {
+        print("!!! WARNING: UNAUTHORIZED ACCESS DETECTED");
+        setTimeout(() => print("Routing to secure subsystem…"), 800);
+        setTimeout(() => print("Decrypting archival memory banks…"), 1600);
+        setTimeout(() => print("ACCESS GRANTED: Executive Clearance Verified."), 2400);
+        setTimeout(() => {
+            print("DATA-TEC EXECUTIVE OVERSIGHT AI ONLINE.");
+            executiveMode = true;
+            document.body.classList.add("exec-mode", "exec-flash");
+            promptSpan.textContent = "DATA-TEC/EXEC>";
+            setTimeout(() => document.body.classList.remove("exec-flash"), 300);
+        }, 3200);
+        return;
+    }
+
+    /* EXEC AI */
+    if (executiveMode && cmd.startsWith("ai ")) {
+        const msg = cmd.slice(3).trim();
+        if (!msg) {
+            print("EXEC-AI> Provide a statement or inquiry.");
+            return;
+        }
+        print(generateExecAI(msg));
+        return;
+    }
+
+    /* NORMAL AI */
+    if (cmd.startsWith("ai ")) {
+        const msg = cmd.slice(3).trim();
+        if (!msg) {
+            print("DATA-BOY AI> You can say things like: ai status, ai who are you.");
+            return;
+        }
+        print(generateDataBoyAI(msg));
+        return;
+    }
+
+    /* FALLBACK */
     print("Unrecognized command.");
 }
-
-/* CURSOR SHOW/HIDE ON FOCUS */
-input.addEventListener("focus", () => {
-    cursor.style.display = "inline-block";
-});
-
-input.addEventListener("blur", () => {
-    cursor.style.display = "none";
-});
-
-/* SETTINGS PANEL */
-document.getElementById("settings-toggle").onclick = () =>
-    document.getElementById("settings-panel").classList.toggle("hidden");
-
-/* EDIT MODE */
-editToggle.onchange = e => {
-    const editableNodes = document.querySelectorAll("[data-editable]");
-    if (e.target.checked) {
-        editableNodes.forEach(node => node.setAttribute("contenteditable", "true"));
-        input.setAttribute("contenteditable", "false");
-    } else {
-        editableNodes.forEach(node => node.removeAttribute("contenteditable"));
-    }
-};
-
-/* SETTINGS CONTROLS */
-document.getElementById("crt-rotate-x").oninput = e =>
-    document.documentElement.style.setProperty("--crt-rotate-x", e.target.value + "deg");
-
-document.getElementById("crt-rotate-y").oninput = e =>
-    document.documentElement.style.setProperty("--crt-rotate-y", e.target.value + "deg");
-
-document.getElementById("crt-scale").oninput = e =>
-    document.documentElement.style.setProperty("--crt-scale", Number(e.target.value) / 100);
-
-document.getElementById("scanline-opacity").oninput = e =>
-    document.documentElement.style.setProperty("--scanline-opacity", Number(e.target.value) / 100);
-
-document.getElementById("glow-strength").oninput = e =>
-    document.documentElement.style.setProperty("--glow-strength", e.target.value + "px");
-
-document.getElementById("font-size").oninput = e =>
-    document.documentElement.style.setProperty("--font-size", e.target.value + "px");
 </script>
 
 </body>
