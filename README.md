@@ -1,5 +1,5 @@
 # DATA‑BOY Auto‑Start Setup
-you need this file to make data-boy ai to work
+you need the .bat file to make data-boy ai to work
 
 DATA‑BOY includes a startup script (start-databoy.bat).  
 This guide explains how to make it run automatically on Windows, Linux, and macOS.
