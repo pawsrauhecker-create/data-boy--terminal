@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DATA-BOY Terminal</title>
+
+<style>
+    :root {
+        --crt-rotate-x: 3deg;
+        --crt-rotate-y: -3deg;
+        --crt-scale: 1.04;
+        --scanline-opacity: 0.06;
+        --glow-strength: 5px;
+        --font-size: 18px;
+    }
+
+    body {
+        background: black;
+        color: #00ff66;
+        font-family: "Courier New", monospace;
+        padding: 20px;
+        font-size: var(--font-size);
+        overflow-x: hidden;
+        perspective: 900px;
+        height: 100vh;
+        margin: 0;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to bottom,
+            rgba(0, 255, 0, var(--scanline-opacity)) 0px,
+            rgba(0, 255, 0, var(--scanline-opacity)) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+        z-index: 999;
+    }
+
+    #screen {
+        white-space: pre-wrap;
+        line-height: 1.4;
+        text-shadow: 0 0 var(--glow-strength) #00ff66;
+        transform: perspective(700px)
+                   rotateX(var(--crt-rotate-x))
+                   rotateY(var(--crt-rotate-y))
+                   scale(var(--crt-scale));
+        transform-origin: center;
+        border-radius: 22px;
+        padding: 14px;
+        padding-bottom: 120px; /* Prevent overlap */
+        overflow: hidden;
+        min-height: 60vh;
+        box-sizing: border-box;
+        border: 1px solid #00ff66;
+        margin-top: 80px;
+    }
+
+    /* FIXED INPUT BOX */
+    #input-line {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border: 1px solid #00ff66;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2000;
+    }
+
+    #prompt {
+        margin-right: 8px;
+    }
+
+    #command {
+        padding: 4px;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #00ff66;
+        font-family: inherit;
+        font-size: inherit;
+        flex: 1;
+        text-shadow: 0 0 var(--glow-strength) #00ff66;
+    }
+
+    /* BLINKING CURSOR ONLY WHEN FOCUSED */
+    #cursor {
+        display: none;
+        width: 10px;
+        height: 20px;
+        margin-left: 4px;
+        background: #00ff66;
+        box-shadow: 0 0 8px #00ff66;
+        animation: blink 0.8s steps(1) infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
+
+    #settings-panel {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 260px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #00ff66;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 12px;
+        z-index: 1500;
+    }
+
+    #settings-panel.hidden {
+        display: none;
+    }
+
+    #settings-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1600;
+        background: black;
+        color: #00ff66;
+        border: 1px solid #00ff66;
+        border-radius: 4px;
+        padding: 4px 8px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    #intro {
+        position: absolute;
+        top: 30%;
+        left: 5%;
+        color: #00ff66;
+        font-size: 20px;
+        text-shadow: 0 0 4px #00ff66;
+        white-space: pre;
+    }
+</style>
+</head>
+<body>
+
+<button id="settings-toggle">SETTINGS</button>
+
+<div id="settings-panel" class="hidden">
+    <h2>DATA-BOY CONFIG</h2>
+
+    <label>CRT Rotate X <input id="crt-rotate-x" type="range" min="-10" max="10" value="3"></label>
+    <label>CRT Rotate Y <input id="crt-rotate-y" type="range" min="-10" max="10" value="-3"></label>
+    <label>CRT Scale <input id="crt-scale" type="range" min="100" max="120" value="104"></label>
+    <label>Scanline Intensity <input id="scanline-opacity" type="range" min="0" max="20" value="6"></label>
+    <label>Glow Strength <input id="glow-strength" type="range" min="0" max="20" value="5"></label>
+    <label>Font Size <input id="font-size" type="range" min="12" max="28" value="18"></label>
+
+    <label><input id="edit-mode-toggle" type="checkbox"> Editable Terminal Text</label>
+</div>
+
+<div id="intro" data-editable>PRESS ENTER TO BOOT UP DATA TERMINAL</div>
+
+<div id="screen" data-editable></div>
+
+<div id="input-line">
+    <span id="prompt" data-editable>DATA-BOY></span>
+    <input id="command" autocomplete="off" disabled>
+    <span id="cursor"></span>
+</div>
+
+<script>
+const screen = document.getElementById("screen");
+const intro = document.getElementById("intro");
+const input = document.getElementById("command");
+const cursor = document.getElementById("cursor");
+const editToggle = document.getElementById("edit-mode-toggle");
+
+let dataBoyBooted = false;
+
+/* PRINT FUNCTION */
+function print(text) {
+    const line = document.createElement("div");
+    line.textContent = text;
+    line.setAttribute("data-editable", "");
+    screen.appendChild(line);
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+/* BOOT SEQUENCE */
+function bootSequence() {
+    const lines = [
+        "DATA-TEC INDUSTRIES UNIFIED OPERATING SYSTEM",
+        "COPYRIGHT 2075-2077 DATA-TEC CORPORATION",
+        "",
+        "Initializing DATA-BOY v2.3...",
+        "Loading memory banks...",
+        "Establishing local AI uplink...",
+        "",
+        "DATA-BOY SYSTEMS ONLINE",
+        "MODEL: DATA-BOY 3.2",
+        "",
+        "DATA-BOY READY.",
+        ""
+    ];
+
+    let i = 0;
+    function next() {
+        if (i < lines.length) {
+            print(lines[i]);
+            i++;
+            setTimeout(next, 200);
+        } else {
+            input.disabled = false;
+            input.focus();
+            cursor.style.display = "inline-block";
+        }
+    }
+    next();
+}
+
+/* ENTER KEY HANDLER */
+document.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+
+        /* BOOT FIRST */
+        if (!dataBoyBooted) {
+            dataBoyBooted = true;
+            intro.remove();
+            bootSequence();
+            return;
+        }
+
+        /* BLOCK TYPING BEFORE BOOT */
+        if (input.disabled) return;
+
+        const cmd = input.value.trim();
+        input.value = "";
+        if (!cmd) return;
+
+        print("DATA-BOY> " + cmd);
+        handleCommand(cmd);
+    }
+});
+
+/* COMMAND HANDLER */
+function handleCommand(cmd) {
+    if (cmd === "help") {
+        print("help  - show commands");
+        print("clear - clear screen");
+        print("status - system diagnostics");
+        return;
+    }
+
+    if (cmd === "clear") {
+        screen.innerHTML = "";
+        return;
+    }
+
+    if (cmd === "status") {
+        print("DATA-BOY STATUS: ALL SYSTEMS NOMINAL");
+        return;
+    }
+
+    print("Unrecognized command.");
+}
+
+/* CURSOR SHOW/HIDE ON FOCUS */
+input.addEventListener("focus", () => {
+    cursor.style.display = "inline-block";
+});
+
+input.addEventListener("blur", () => {
+    cursor.style.display = "none";
+});
+
+/* SETTINGS PANEL */
+document.getElementById("settings-toggle").onclick = () =>
+    document.getElementById("settings-panel").classList.toggle("hidden");
+
+/* EDIT MODE */
+editToggle.onchange = e => {
+    const editableNodes = document.querySelectorAll("[data-editable]");
+    if (e.target.checked) {
+        editableNodes.forEach(node => node.setAttribute("contenteditable", "true"));
+        input.setAttribute("contenteditable", "false");
+    } else {
+        editableNodes.forEach(node => node.removeAttribute("contenteditable"));
+    }
+};
+
+/* SETTINGS CONTROLS */
+document.getElementById("crt-rotate-x").oninput = e =>
+    document.documentElement.style.setProperty("--crt-rotate-x", e.target.value + "deg");
+
+document.getElementById("crt-rotate-y").oninput = e =>
+    document.documentElement.style.setProperty("--crt-rotate-y", e.target.value + "deg");
+
+document.getElementById("crt-scale").oninput = e =>
+    document.documentElement.style.setProperty("--crt-scale", Number(e.target.value) / 100);
+
+document.getElementById("scanline-opacity").oninput = e =>
+    document.documentElement.style.setProperty("--scanline-opacity", Number(e.target.value) / 100);
+
+document.getElementById("glow-strength").oninput = e =>
+    document.documentElement.style.setProperty("--glow-strength", e.target.value + "px");
+
+document.getElementById("font-size").oninput = e =>
+    document.documentElement.style.setProperty("--font-size", e.target.value + "px");
+</script>
+
+</body>
+</html>
