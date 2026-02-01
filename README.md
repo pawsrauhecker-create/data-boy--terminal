@@ -1,26 +1,86 @@
-# DATA‑BOY Terminal — Setup Guide
+# DATA‑BOY Auto‑Start Setup
+you nedd this file to make data-boy ai to work
 
-This project runs entirely from a single HTML file. There is no installation, no dependencies, and no ZIP archive required. Follow these steps to set it up on your computer or host it online.
-
----
-
-## 1. Get the DATA‑BOY File
-
-You should have one file:
-
-index.html
-
-This file contains the entire project.
+DATA‑BOY includes a startup script (start-databoy.bat).  
+This guide explains how to make it run automatically on Windows, Linux, and macOS.
 
 ---
 
-## 2. Run DATA‑BOY on Your Computer
+# 🪟 Windows — Add the .bat File to Startup
 
-To open the terminal locally:
+1. Press:
+   Win + R
 
-1. Locate the file:
-   index.html
-2. Double‑click it.
-3. Your browser will open DATA‑BOY automatically.
+2. Type:
+   shell:startup
 
-No server, no setup, no extra files.
+3. Press Enter.
+
+4. Move your provided file:
+   start-databoy.bat
+   into the Startup folder.
+
+Windows will now run DATA‑BOY automatically every time you log in.
+
+---
+
+# 🐧 Linux — Run the Windows .bat File at Startup
+
+Linux cannot run .bat files directly.  
+You must **call the .bat file through Wine** at startup.
+
+## 1. Install Wine (if not installed)
+sudo apt install wine
+
+## 2. Create an autostart entry
+mkdir -p ~/.config/autostart
+nano ~/.config/autostart/databoy.desktop
+
+## 3. Paste this inside:
+[Desktop Entry]
+Type=Application
+Exec=wine /path/to/start-databoy.bat
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=DATA-BOY Auto Start
+
+Replace `/path/to/start-databoy.bat` with the full path to your file.
+
+Linux will now run the .bat file automatically at login.
+
+---
+
+# 🍎 macOS — Run the Windows .bat File at Startup
+
+macOS cannot run .bat files directly.  
+You must **call the .bat file using Wine** through a small launcher script.
+
+## 1. Install Wine (if not installed)
+brew install --cask wine-stable
+
+## 2. Create a launcher script
+nano ~/databoy-startup.command
+
+## 3. Paste this inside:
+#!/bin/bash
+wine /path/to/start-databoy.bat
+
+Replace `/path/to/start-databoy.bat` with the full path.
+
+## 4. Make it executable
+chmod +x ~/databoy-startup.command
+
+## 5. Add it to Login Items
+System Settings → General → Login Items → “Open at Login” → +
+
+Select:
+databoy-startup.command
+
+macOS will now run the .bat file automatically at login.
+
+---
+
+# Summary
+
+- **Windows:** place the provided
